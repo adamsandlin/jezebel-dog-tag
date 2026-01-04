@@ -188,27 +188,22 @@ function sendWhatsApp(who) {
   const baseLocal = T[L].msg;
   const num = who === 'adam' ? PHONE_ADAM : PHONE_ALEX;
 
-  // Determine if we need the English translation fallback
+  // If L is 'en', we don't want to repeat the message. 
+  // Otherwise, we include baseEN on a new line.
   const secondaryMsg = L === 'en' ? '' : `\n${baseEN}\n`;
 
-  // Helper to construct the final string to avoid repetition
-  const buildMessage = (locationInfo = '') => {
-    return `${baseLocal}${secondaryMsg}
-${locationInfo}
-(Please add any additional details that will help us locate Jezebel, and thank you for keeping her safe!)`.trim();
-  };
+  navigator.geolocation.getCurrentPosition(pos => {
+    const map = `https://maps.google.com/?q=${pos.coords.latitude},${pos.coords.longitude}`;
+    const time = new Date().toLocaleString();
+    openWA(num, `${baseLocal}${secondaryMsg}
+${map}
+${time}
 
-  navigator.geolocation.getCurrentPosition(
-    pos => {
-      const map = `http://maps.google.com/?q=${pos.coords.latitude},${pos.coords.longitude}`;
-      const time = new Date().toLocaleString();
-      const locationData = `${map}\n${time}\n`;
-      openWA(num, buildMessage(locationData));
-    },
-    () => {
-      openWA(num, buildMessage());
-    }
-  );
+(Please add any additional details that will help us locate Jezebel, and thank you for keeping her safe!)`);
+  }, () => {
+    openWA(num, `${baseLocal}${secondaryMsg}
+(Please add any additional details that will help us locate Jezebel, and thank you for keeping her safe!)`);
+  });
 }
 
 function emergencyCall() {
