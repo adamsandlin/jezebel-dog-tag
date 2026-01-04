@@ -1,0 +1,18 @@
+name: NFC Scan Logger
+
+on:
+  repository_dispatch:
+    types: [nfc_scan]
+
+jobs:
+  log-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create Issue
+        uses: peter-evans/create-issue-from-file@v5
+        with:
+          title: "📟 NFC Scan – ${DATE}"
+          content-filepath: issue.md
+          labels: nfc-scan
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
