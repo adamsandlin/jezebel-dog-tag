@@ -188,26 +188,27 @@ function sendWhatsApp(who) {
   const baseLocal = T[L].msg;
   const num = who === 'adam' ? PHONE_ADAM : PHONE_ALEX;
 
-  navigator.geolocation.getCurrentPosition(pos => {
-    const map = `https://maps.google.com/?q=${pos.coords.latitude},${pos.coords.longitude}`;
-    const time = new Date().toLocaleString();
-    openWA(num, `${baseLocal}
-${baseEN}
+  // Determine if we need the English translation fallback
+  const secondaryMsg = L === 'en' ? '' : `\n${baseEN}\n`;
 
-${map}
-${time}
+  // Helper to construct the final string to avoid repetition
+  const buildMessage = (locationInfo = '') => {
+    return `${baseLocal}${secondaryMsg}
+${locationInfo}
+(Please add any additional details that will help us locate Jezebel, and thank you for keeping her safe!)`.trim();
+  };
 
-(Please add any additional details that will help us locate Jezebel, and thank you for keeping her safe!)`);
-  }, () => {
-    openWA(num, `${baseLocal}
-${baseEN}
-
-(Please add any additional details that will help us locate Jezebel, and thank you for keeping her safe!)`);
-  });
-}
-
-function openWA(num, text) {
-  window.location.href = `https://wa.me/${num}?text=${encodeURIComponent(text)}`;
+  navigator.geolocation.getCurrentPosition(
+    pos => {
+      const map = `http://maps.google.com/?q=${pos.coords.latitude},${pos.coords.longitude}`;
+      const time = new Date().toLocaleString();
+      const locationData = `${map}\n${time}\n`;
+      openWA(num, buildMessage(locationData));
+    },
+    () => {
+      openWA(num, buildMessage());
+    }
+  );
 }
 
 function emergencyCall() {
@@ -245,10 +246,15 @@ function callPerson(text) {
 ===================== */
 function callPerson(who) {
   const num = who === 'adam' ? PHONE_ADAM : PHONE_ALEX;
-  if (confirm('Call via WhatsApp?')) {
-    window.location.href = `https://wa.me/${num}`;
-  } else {
+
+  const choice = confirm(
+    "Press OK to call using your phone.\nPress Cancel to open WhatsApp chat."
+  );
+
+  if (choice) {
     window.location.href = `tel:+${num}`;
+  } else {
+    window.location.href = `https://wa.me/${num}`;
   }
 }
 </script>
