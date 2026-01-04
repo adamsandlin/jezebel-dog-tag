@@ -68,8 +68,6 @@
 /* =====================
    CONFIG
 ===================== */
-const NAME_ADAM = "Adam";
-const NAME_ALEX = "Alex";
 const PHONE_ADAM = "34607067359";
 const PHONE_ALEX = "16193012756";
 const GITHUB_USER = "adamsandlin";
@@ -102,7 +100,7 @@ const T = {
     callAlex: "📞 Call Alex",
     emergency: "🚨 EMERGENCY – Dog found nearby",
     emergencyConfirm: "Use this only if you can see or are holding Jezebel right now. Continue?",
-    msg: "Adam & Alex, I found Jezebel and I think she may be lost."
+    msg: "Adam & Alex, I found Jezebel. I have her with me and I think she is lost."
   },
   es: {
     title: "🐶 Parece que has encontrado a nuestra perra, Jezebel",
@@ -113,7 +111,7 @@ const T = {
     callAlex: "📞 Llamar a Alex",
     emergency: "🚨 EMERGENCIA – Perra encontrada cerca",
     emergencyConfirm: "Usa esto solo si puedes ver o sujetar a Jezebel ahora mismo. ¿Continuar?",
-    msg: "Adam y Alex, he encontrado a Jezebel y creo que puede estar perdida."
+    msg: "Adam y Alex, La tengo conmigo y creo que está perdida."
   },
   ca: {
     title: "🐶 Sembla que has trobat la nostra gossa, Jezebel",
@@ -124,7 +122,7 @@ const T = {
     callAlex: "📞 Trucar a Alex",
     emergency: "🚨 EMERGÈNCIA – Gos trobada a prop",
     emergencyConfirm: "Fes servir això només si pots veure o subjectar la Jezebel ara mateix. Continuar?",
-    msg: "Adam i Alex, he trobat la Jezebel i crec que pot estar perduda."
+    msg: "Adam i Alex, La tinc amb mi i crec que està perduda."
   }
 };
 
@@ -186,7 +184,6 @@ navigator.geolocation.getCurrentPosition(
    WHATSAPP
 ===================== */
 function sendWhatsApp(who) {
-  const name = name === 'Adam' ? NAME_ADAM : NAME_ALEX;
   const baseEN = T['en'].msg;
   const baseLocal = T[L].msg;
   const num = who === 'adam' ? PHONE_ADAM : PHONE_ALEX;
@@ -200,14 +197,10 @@ ${baseEN}
 ${map}
 ${time}
 
-Hi ${name}, I found Jezebel and think she is lost.
-
 (Please add any additional details that will help us locate Jezebel, and thank you for keeping her safe!)`);
   }, () => {
     openWA(num, `${baseLocal}
 ${baseEN}
-
-Hi ${name}, I found Jezebel and think she is lost.
 
 (Please add any additional details that will help us locate Jezebel, and thank you for keeping her safe!)`);
   });
