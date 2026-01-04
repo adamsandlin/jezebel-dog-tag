@@ -7,7 +7,10 @@
 
   <style>
     :root {
-      --bg:#ffffff; --text:#111; --card:#f2f2f2; --btn:#25D366;
+      --bg:#ffffff; --text:#111; --card:#f2f2f2;
+      --wa:#25D366; --wa-dark:#1B8F4B;
+      --alex:#007AFF; --alex-dark:#0051A8;
+      --emergency:#E53935;
     }
     @media (prefers-color-scheme: dark) {
       :root { --bg:#121212; --text:#f5f5f5; --card:#1f1f1f; }
@@ -24,9 +27,23 @@
     h1 { margin-top: 0; }
     button {
       width: 100%; padding: 14px; margin-top: 12px;
-      border: none; border-radius: 10px;
+      border: none; border-radius: 12px;
       font-size: 16px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: 10px;
     }
+    .wa { color: #fff; }
+    .call { color: #fff; }
+    .adam.wa { background: var(--wa); }
+    .adam.call { background: var(--wa-dark); }
+    .alex.wa { background: var(--alex); }
+    .alex.call { background: var(--alex-dark); }
+    .emergency { background: var(--emergency); color: #fff; font-weight: 700; }
+    .wa { color: #fff; }
+    .call { color: #fff; }
+    .adam.wa { background: #25D366; }
+    .adam.call { background: #1B8F4B; }
+    .alex.wa { background: #007AFF; }
+    .alex.call { background: #0051A8; }
     .wa { background: var(--btn); color: #fff; }
     .call { background: #007AFF; color: #fff; }
   </style>
@@ -40,19 +57,22 @@
 
 <div class="card" id="info"></div>
 
-<button class="wa" onclick="sendWhatsApp()" id="waBtn"></button>
-<button class="call" onclick="callPerson('adam')" id="adamBtn"></button>
-<button class="call" onclick="callPerson('alex')" id="alexBtn"></button>
+<button class="emergency" onclick="emergencyCall()" id="emergencyBtn"></button>
+
+<button class="wa adam" onclick="sendWhatsApp('adam')" id="waAdam"></button>
+<button class="call adam" onclick="callPerson('adam')" id="callAdam"></button>
+<button class="wa alex" onclick="sendWhatsApp('alex')" id="waAlex"></button>
+<button class="call alex" onclick="callPerson('alex')" id="callAlex"></button>
 
 <script>
 /* =====================
    CONFIG
 ===================== */
-const PHONE_ADAM = "+34607067359";
-const PHONE_ALEX = "+16193012756";
-const GITHUB_USER = "adamsandlin";
+const PHONE_ADAM = "34607067359";
+const PHONE_ALEX = "16193012756";
+const GITHUB_USER = "YOUR_USERNAME";
 const GITHUB_REPO = "jezebel-dog-tag";
-const GITHUB_TOKEN = "* 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"; 
+const GITHUB_TOKEN = "YOUR_TOKEN"; // move to serverless proxy if desired
 
 /* =====================
    AGE CALCULATION
@@ -74,25 +94,34 @@ const T = {
   en: {
     title: "🐶 Hi, it seems like you found our dog, Jezebel!",
     intro: "Some important information about her is below, including how to contact us if you think that she is lost.",
-    wa: "Send us a WhatsApp message",
-    adam: "Call Adam",
-    alex: "Call Alex",
+    waAdam: "💬 WhatsApp Adam",
+    callAdam: "📞 Call Adam",
+    waAlex: "💬 WhatsApp Alex",
+    callAlex: "📞 Call Alex",
+    emergency: "🚨 EMERGENCY – Dog found nearby",
+    emergencyConfirm: "Use this only if you can see or are holding Jezebel right now. Continue?",
     msg: "Adam & Alex, I found Jezebel and I think she may be lost."
   },
   es: {
     title: "🐶 Parece que has encontrado a nuestra perra, Jezebel",
     intro: "A continuación encontrará información importante sobre ella, incluido cómo comunicarse con nosotros si cree que está perdida.",
-    wa: "Enviar WhatsApp",
-    adam: "Llamar a Adam",
-    alex: "Llamar a Alex",
+    waAdam: "💬 WhatsApp Adam",
+    callAdam: "📞 Llamar a Adam",
+    waAlex: "💬 WhatsApp Alex",
+    callAlex: "📞 Llamar a Alex",
+    emergency: "🚨 EMERGENCIA – Perra encontrada cerca",
+    emergencyConfirm: "Usa esto solo si puedes ver o sujetar a Jezebel ahora mismo. ¿Continuar?",
     msg: "Adam y Alex, he encontrado a Jezebel y creo que puede estar perdida."
   },
   ca: {
     title: "🐶 Sembla que has trobat la nostra gossa, Jezebel",
     intro: "A continuació trobareu informació important sobre ella, inclosa com contactar amb nosaltres si creieu que s'ha perdut.",
-    wa: "Enviar WhatsApp",
-    adam: "Trucar a Adam",
-    alex: "Trucar a Alex",
+    waAdam: "💬 WhatsApp Adam",
+    callAdam: "📞 Trucar a Adam",
+    waAlex: "💬 WhatsApp Alex",
+    callAlex: "📞 Trucar a Alex",
+    emergency: "🚨 EMERGÈNCIA – Gos trobada a prop",
+    emergencyConfirm: "Fes servir això només si pots veure o subjectar la Jezebel ara mateix. Continuar?",
     msg: "Adam i Alex, he trobat la Jezebel i crec que pot estar perduda."
   }
 };
@@ -102,9 +131,12 @@ const T = {
 ===================== */
 document.getElementById('title').innerText = T[L].title;
 document.getElementById('intro').innerText = T[L].intro;
-document.getElementById('waBtn').innerText = T[L].wa;
-document.getElementById('adamBtn').innerText = T[L].adam;
-document.getElementById('alexBtn').innerText = T[L].alex;
+document.getElementById('emergencyBtn').innerText = T[L].emergency;
+document.getElementById('waAdam').innerText = T[L].waAdam;
+document.getElementById('callAdam').innerText = T[L].callAdam;
+document.getElementById('waAlex').innerText = T[L].waAlex;
+document.getElementById('callAlex').innerText = T[L].callAlex;
+ `${T[L].alex}`;
 
 document.getElementById('info').innerHTML = `
 <p>🐶 Name: Jezebel</p>
@@ -151,14 +183,15 @@ navigator.geolocation.getCurrentPosition(
 /* =====================
    WHATSAPP
 ===================== */
-function sendWhatsApp() {
+function sendWhatsApp(who) {
   const baseEN = T['en'].msg;
   const baseLocal = T[L].msg;
+  const num = who === 'adam' ? PHONE_ADAM : PHONE_ALEX;
 
   navigator.geolocation.getCurrentPosition(pos => {
     const map = `https://maps.google.com/?q=${pos.coords.latitude},${pos.coords.longitude}`;
     const time = new Date().toLocaleString();
-    openWA(`${baseLocal}
+    openWA(num, `${baseLocal}
 ${baseEN}
 
 ${map}
@@ -166,14 +199,44 @@ ${time}
 
 (Please add any additional details that will help us locate Jezebel, and thank you for keeping her safe!)`);
   }, () => {
-    openWA(`${baseLocal}
+    openWA(num, `${baseLocal}
 ${baseEN}
 
 (Please add any additional details that will help us locate Jezebel, and thank you for keeping her safe!)`);
   });
 }
 
-function openWA(text) {
+function openWA(num, text) {
+  window.location.href = `https://wa.me/${num}?text=${encodeURIComponent(text)}`;
+}
+
+function emergencyCall() {
+  if (!confirm(T[L].emergencyConfirm)) return;
+
+  navigator.geolocation.getCurrentPosition(pos => {
+    const map = `https://maps.google.com/?q=${pos.coords.latitude},${pos.coords.longitude}`;
+    const time = new Date().toLocaleString();
+
+    logScan(`EMERGENCY – ${map}`);
+
+    window.location.href = `tel:+${PHONE_ADAM}`;
+
+    setTimeout(() => {
+      openWA(PHONE_ADAM,
+        `🚨 EMERGENCY
+${T[L].msg}
+
+${map}
+${time}`
+      );
+    }, 4000);
+  }, () => {
+    logScan("EMERGENCY – location denied");
+    window.location.href = `tel:+${PHONE_ADAM}`;
+  });
+}
+
+function callPerson(text) {
   window.location.href = `https://wa.me/?text=${encodeURIComponent(text)}`;
 }
 
