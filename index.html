@@ -68,11 +68,13 @@
 /* =====================
    CONFIG
 ===================== */
+const NAME_ADAM = "Adam";
+const NAME_ALEX = "Alex";
 const PHONE_ADAM = "34607067359";
 const PHONE_ALEX = "16193012756";
-const GITHUB_USER = "YOUR_USERNAME";
+const GITHUB_USER = "adamsandlin";
 const GITHUB_REPO = "jezebel-dog-tag";
-const GITHUB_TOKEN = "YOUR_TOKEN"; // move to serverless proxy if desired
+const GITHUB_TOKEN = "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"; 
 
 /* =====================
    AGE CALCULATION
@@ -184,6 +186,7 @@ navigator.geolocation.getCurrentPosition(
    WHATSAPP
 ===================== */
 function sendWhatsApp(who) {
+  const name = name === 'Adam' ? NAME_ADAM : NAME_ALEX;
   const baseEN = T['en'].msg;
   const baseLocal = T[L].msg;
   const num = who === 'adam' ? PHONE_ADAM : PHONE_ALEX;
@@ -197,10 +200,14 @@ ${baseEN}
 ${map}
 ${time}
 
+Hi ${name}, I found Jezebel and think she is lost.
+
 (Please add any additional details that will help us locate Jezebel, and thank you for keeping her safe!)`);
   }, () => {
     openWA(num, `${baseLocal}
 ${baseEN}
+
+Hi ${name}, I found Jezebel and think she is lost.
 
 (Please add any additional details that will help us locate Jezebel, and thank you for keeping her safe!)`);
   });
