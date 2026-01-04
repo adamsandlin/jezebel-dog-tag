@@ -45,11 +45,18 @@
 <button class="call" onclick="callPerson('alex')" id="alexBtn"></button>
 
 <script>
-/* CONFIG */
-const PHONE_ADAM = "34607067359";
-const PHONE_ALEX = "16193012756";
+/* =====================
+   CONFIG
+===================== */
+const PHONE_ADAM = "+34607067359";
+const PHONE_ALEX = "+16193012756";
+const GITHUB_USER = "adamsandlin";
+const GITHUB_REPO = "jezebel-dog-tag";
+const GITHUB_TOKEN = "* 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"; 
 
-/* AGE CALCULATION */
+/* =====================
+   AGE CALCULATION
+===================== */
 function calcAge() {
   const birth = new Date('2023-11-01');
   const now = new Date();
@@ -57,7 +64,9 @@ function calcAge() {
   return Math.round(years * 2) / 2 + " years";
 }
 
-/* LANGUAGE */
+/* =====================
+   LANGUAGE DETECTION
+===================== */
 const lang = navigator.language.toLowerCase();
 const L = lang.startsWith('es') ? 'es' : lang.startsWith('ca') ? 'ca' : 'en';
 
@@ -72,7 +81,7 @@ const T = {
   },
   es: {
     title: "🐶 Parece que has encontrado a nuestra perra, Jezebel",
-    intro: "A continuación, encontrarás información importante sobre ella, incluyendo cómo contactarnos si crees que está perdida.",
+    intro: "A continuación encontrará información importante sobre ella, incluido cómo comunicarse con nosotros si cree que está perdida.",
     wa: "Enviar WhatsApp",
     adam: "Llamar a Adam",
     alex: "Llamar a Alex",
@@ -80,7 +89,7 @@ const T = {
   },
   ca: {
     title: "🐶 Sembla que has trobat la nostra gossa, Jezebel",
-    intro: "A continuació trobareu informació important sobre ella, com ara com contactar amb nosaltres si creieu que s'ha perdut.",
+    intro: "A continuació trobareu informació important sobre ella, inclosa com contactar amb nosaltres si creieu que s'ha perdut.",
     wa: "Enviar WhatsApp",
     adam: "Trucar a Adam",
     alex: "Trucar a Alex",
@@ -88,7 +97,9 @@ const T = {
   }
 };
 
-/* RENDER */
+/* =====================
+   RENDER PAGE
+===================== */
 document.getElementById('title').innerText = T[L].title;
 document.getElementById('intro').innerText = T[L].intro;
 document.getElementById('waBtn').innerText = T[L].wa;
@@ -109,22 +120,56 @@ document.getElementById('info').innerHTML = `
 <p>🏠 Home city: Barcelona</p>
 <p>📞 Owners: Adam & Alex</p>`;
 
-/* WHATSAPP */
+/* =====================
+   GITHUB LOGGING
+===================== */
+function logScan(locationText = "Location not shared") {
+  fetch(`https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/dispatches`, {
+    method: "POST",
+    headers: {
+      "Accept": "application/vnd.github+json",
+      "Authorization": `Bearer ${GITHUB_TOKEN}`,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      event_type: "nfc_scan",
+      client_payload: {
+        date: new Date().toISOString(),
+        language: navigator.language,
+        userAgent: navigator.userAgent,
+        location: locationText
+      }
+    })
+  });
+}
+
+navigator.geolocation.getCurrentPosition(
+  pos => logScan(`Lat: ${pos.coords.latitude}, Lon: ${pos.coords.longitude}`),
+  () => logScan()
+);
+
+/* =====================
+   WHATSAPP
+===================== */
 function sendWhatsApp() {
   const baseEN = T['en'].msg;
   const baseLocal = T[L].msg;
 
   navigator.geolocation.getCurrentPosition(pos => {
-    const lat = pos.coords.latitude;
-    const lon = pos.coords.longitude;
-    const map = `https://maps.google.com/?q=${lat},${lon}`;
+    const map = `https://maps.google.com/?q=${pos.coords.latitude},${pos.coords.longitude}`;
     const time = new Date().toLocaleString();
+    openWA(`${baseLocal}
+${baseEN}
 
-    const text = `${baseLocal}\n${baseEN}\n\n${map}\n${time}\n\n(Please add any additional details that will help us locate Jezebel, and thank you for keeping her safe!)`;
-    openWA(text);
+${map}
+${time}
+
+(Please add any additional details that will help us locate Jezebel, and thank you for keeping her safe!)`);
   }, () => {
-    const text = `${baseLocal}\n${baseEN}\n\n(Please add any additional details that will help us locate Jezebel, and thank you for keeping her safe!)`;
-    openWA(text);
+    openWA(`${baseLocal}
+${baseEN}
+
+(Please add any additional details that will help us locate Jezebel, and thank you for keeping her safe!)`);
   });
 }
 
@@ -132,7 +177,9 @@ function openWA(text) {
   window.location.href = `https://wa.me/?text=${encodeURIComponent(text)}`;
 }
 
-/* CALL */
+/* =====================
+   CALLING
+===================== */
 function callPerson(who) {
   const num = who === 'adam' ? PHONE_ADAM : PHONE_ALEX;
   if (confirm('Call via WhatsApp?')) {
@@ -141,38 +188,6 @@ function callPerson(who) {
     window.location.href = `tel:+${num}`;
   }
 }
-</script>
-  <script>
-function logScan(locationText = "Location not shared") {
-  const payload = {
-    event_type: "nfc_scan",
-    client_payload: {
-      date: new Date().toISOString(),
-      language: navigator.language,
-      userAgent: navigator.userAgent,
-      location: locationText
-    }
-  };
-
-  fetch("https://api.github.com/repos/YOUR_USERNAME/jezebel-dog-tag/dispatches", {
-    method: "POST",
-    headers: {
-      "Accept": "application/vnd.github+json",
-      "Authorization": "Bearer YOUR_TOKEN",
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify(payload)
-  });
-}
-
-// Trigger logging on page load
-navigator.geolocation.getCurrentPosition(
-  pos => {
-    const loc = `Lat: ${pos.coords.latitude}, Lon: ${pos.coords.longitude}`;
-    logScan(loc);
-  },
-  () => logScan()
-);
 </script>
 </body>
 </html>
