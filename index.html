@@ -142,5 +142,37 @@ function callPerson(who) {
   }
 }
 </script>
+  <script>
+function logScan(locationText = "Location not shared") {
+  const payload = {
+    event_type: "nfc_scan",
+    client_payload: {
+      date: new Date().toISOString(),
+      language: navigator.language,
+      userAgent: navigator.userAgent,
+      location: locationText
+    }
+  };
+
+  fetch("https://api.github.com/repos/YOUR_USERNAME/jezebel-dog-tag/dispatches", {
+    method: "POST",
+    headers: {
+      "Accept": "application/vnd.github+json",
+      "Authorization": "Bearer YOUR_TOKEN",
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(payload)
+  });
+}
+
+// Trigger logging on page load
+navigator.geolocation.getCurrentPosition(
+  pos => {
+    const loc = `Lat: ${pos.coords.latitude}, Lon: ${pos.coords.longitude}`;
+    logScan(loc);
+  },
+  () => logScan()
+);
+</script>
 </body>
 </html>
