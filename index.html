@@ -72,7 +72,6 @@ const PHONE_ADAM = "34607067359";
 const PHONE_ALEX = "16193012756";
 const GITHUB_USER = "adamsandlin";
 const GITHUB_REPO = "jezebel-dog-tag";
-const GITHUB_TOKEN = "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"; 
 
 /* =====================
    AGE CALCULATION
@@ -156,25 +155,18 @@ document.getElementById('info').innerHTML = `
    GITHUB LOGGING
 ===================== */
 function logScan(locationText = "Location not shared") {
-  fetch(`https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/dispatches`, {
+  fetch("https://jezebel-nfc-logging.adam-sandlin.workers.dev", {
     method: "POST",
-    headers: {
-      "Accept": "application/vnd.github+json",
-      "Authorization": `Bearer ${GITHUB_TOKEN}`,
-      "Content-Type": "application/json"
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      event_type: "nfc_scan",
-      client_payload: {
-        date: new Date().toISOString(),
-        language: navigator.language,
-        userAgent: navigator.userAgent,
-        location: locationText
-      }
+      date: new Date().toISOString(),
+      language: navigator.language,
+      userAgent: navigator.userAgent,
+      location: locationText
     })
   });
 }
-
+  
 navigator.geolocation.getCurrentPosition(
   pos => logScan(`Lat: ${pos.coords.latitude}, Lon: ${pos.coords.longitude}`),
   () => logScan()
