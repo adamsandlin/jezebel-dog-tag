@@ -94,33 +94,27 @@ const T = {
     title: "🐶 Hi, it seems like you found our dog, Jezebel!",
     intro: "Some important information about her is below, including how to contact us if you think that she is lost.",
     waAdam: "💬 WhatsApp Adam",
-    callAdam: "📞 Call Adam",
+    callAdam: "📞 Call Adam 🇪🇸",
     waAlex: "💬 WhatsApp Alex",
-    callAlex: "📞 Call Alex",
-    emergency: "🚨 EMERGENCY – Dog found nearby",
-    emergencyConfirm: "Use this only if you can see or are holding Jezebel right now. Continue?",
+    callAlex: "📞 Call Alex 🇺🇸",
     msg: "Adam & Alex, I found Jezebel. I have her with me and I think she is lost."
   },
   es: {
     title: "🐶 Parece que has encontrado a nuestra perra, Jezebel",
     intro: "A continuación encontrará información importante sobre ella, incluido cómo comunicarse con nosotros si cree que está perdida.",
     waAdam: "💬 WhatsApp Adam",
-    callAdam: "📞 Llamar a Adam",
+    callAdam: "📞 Llamar a Adam 🇪🇸",
     waAlex: "💬 WhatsApp Alex",
-    callAlex: "📞 Llamar a Alex",
-    emergency: "🚨 EMERGENCIA – Perra encontrada cerca",
-    emergencyConfirm: "Usa esto solo si puedes ver o sujetar a Jezebel ahora mismo. ¿Continuar?",
+    callAlex: "📞 Llamar a Alex 🇺🇸",
     msg: "Adam y Alex, La tengo conmigo y creo que está perdida."
   },
   ca: {
     title: "🐶 Sembla que has trobat la nostra gossa, Jezebel",
     intro: "A continuació trobareu informació important sobre ella, inclosa com contactar amb nosaltres si creieu que s'ha perdut.",
     waAdam: "💬 WhatsApp Adam",
-    callAdam: "📞 Trucar a Adam",
+    callAdam: "📞 Trucar a Adam 🇪🇸",
     waAlex: "💬 WhatsApp Alex",
-    callAlex: "📞 Trucar a Alex",
-    emergency: "🚨 EMERGÈNCIA – Gos trobada a prop",
-    emergencyConfirm: "Fes servir això només si pots veure o subjectar la Jezebel ara mateix. Continuar?",
+    callAlex: "📞 Trucar a Alex 🇺🇸",
     msg: "Adam i Alex, La tinc amb mi i crec que està perduda."
   }
 };
@@ -203,32 +197,6 @@ ${time}
 
 function openWA(num, text) {
   window.location.href = `https://wa.me/${num}?text=${encodeURIComponent(text)}`;
-}
-
-function emergencyCall() {
-  if (!confirm(T[L].emergencyConfirm)) return;
-
-  navigator.geolocation.getCurrentPosition(pos => {
-    const map = `https://maps.google.com/?q=${pos.coords.latitude},${pos.coords.longitude}`;
-    const time = new Date().toLocaleString();
-
-    logScan(`EMERGENCY – ${map}`);
-
-    window.location.href = `tel:+${PHONE_ADAM}`;
-
-    setTimeout(() => {
-      openWA(PHONE_ADAM,
-        `🚨 EMERGENCY
-${T[L].msg}
-
-${map}
-${time}`
-      );
-    }, 4000);
-  }, () => {
-    logScan("EMERGENCY – location denied");
-    window.location.href = `tel:+${PHONE_ADAM}`;
-  });
 }
 
 function callPerson(text) {
